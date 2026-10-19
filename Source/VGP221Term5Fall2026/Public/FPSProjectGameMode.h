@@ -16,5 +16,5 @@ class VGP221TERM5FALL2026_API AFPSProjectGameMode : public AGameModeBase
 
 public:
 	virtual void StartPlay() override;
-	
+
 };
