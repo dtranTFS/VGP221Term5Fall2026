@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Engine/Canvas.h"
 #include "GameFramework/HUD.h"
+#include "GUI/GameMenuWidget.h"
+#include "GUI/SlateExample/SSettingsWidget.h"
 #include "GameHUD.generated.h"
 
 /**
@@ -21,7 +23,21 @@ public:
 
 	virtual void DrawHUD() override;
 
-	// 1. HUD DRaw Method of making UI
+	// 1. HUD Draw Method of making UI
 	UPROPERTY(EditAnywhere)
 	UTexture2D* CrosshairTexture;
+
+	// 2. Slates method of making UI
+	TSharedPtr<class SSettingsWidget> SettingsWidget;
+	TSharedPtr<class SWidget> SettingsWidgetContainer;
+
+	void ShowSettingsWidget();
+	void HideSettingsWidget();
+
+	// 3. UMG method of making UI (Recommended)
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UGameMenuWidget> GameMenuWidgetClass;
+	UGameMenuWidget* GameMenuWidgetContainer;
+
+	void SpawnGameMenuWidget();
 };

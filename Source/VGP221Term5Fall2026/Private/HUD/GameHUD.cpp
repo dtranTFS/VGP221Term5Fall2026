@@ -2,10 +2,17 @@
 
 
 #include "HUD/GameHUD.h"
+#include "Widgets/SWeakWidget.h"
 
 void AGameHUD::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 2. Spawning slate settings
+	ShowSettingsWidget();
+
+	// 3. UMG spawn game menu 
+	SpawnGameMenuWidget();
 }
 
 void AGameHUD::DrawHUD()
@@ -38,4 +45,38 @@ void AGameHUD::DrawHUD()
 	FCanvasTileItem CrosshairTileItem(CrosshairDrawPos, CrosshairTexture->GetResource(), CrosshairDrawSize, FLinearColor::White);
 	CrosshairTileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem(CrosshairTileItem);
+}
+
+void AGameHUD::ShowSettingsWidget()
+{
+	SettingsWidget = SNew(SSettingsWidget).MyInt(10).GameHUD(this);
+	GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(SettingsWidgetContainer, SWeakWidget).PossiblyNullContent(SettingsWidget.ToSharedRef()));
+
+	PlayerOwner->bShowMouseCursor = true;
+	PlayerOwner->SetInputMode(FInputModeUIOnly());
+}
+
+void AGameHUD::HideSettingsWidget()
+{
+	GEngine->GameViewport->RemoveViewportWidgetContent(SettingsWidgetContainer.ToSharedRef());
+
+	PlayerOwner->bShowMouseCursor = false;
+	PlayerOwner->SetInputMode(FInputModeGameOnly());
+}
+
+void AGameHUD::SpawnGameMenuWidget()
+{
+	if (!GameMenuWidgetClass) return;
+
+	if (GameMenuWidgetContainer) {
+		GameMenuWidgetContainer->RemoveFromParent();
+		GameMenuWidgetContainer = nullptr;
+	}
+
+	GameMenuWidgetContainer = CreateWidget<UGameMenuWidget>(GetWorld(), GameMenuWidgetClass);
+	GameMenuWidgetContainer->AddToViewport();
+
+	PlayerOwner->bShowMouseCursor = false;
+	PlayerOwner->SetInputMode(FInputModeGameOnly());
+
 }
